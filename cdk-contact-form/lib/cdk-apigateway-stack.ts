@@ -6,6 +6,8 @@ export class CdkApiGatewayStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
+        const STAGE = process.env.STAGE || 'dev'
+
         // The code that defines your stack goes here
         // defines the AWS Lambda handler
         const contactFormHandler = new lambda.Function(this, 'contactForm', 
@@ -18,7 +20,10 @@ export class CdkApiGatewayStack extends cdk.Stack {
         // defines the Api Gateway
         const contactFormApi = new apigateway.LambdaRestApi(this, 'contactFormEndpoint', {
             handler: contactFormHandler,
-            proxy: false
+            proxy: false,
+            deployOptions: {
+                stageName: STAGE
+            }
         });
 
         const form = contactFormApi.root.addResource('contact-form');
